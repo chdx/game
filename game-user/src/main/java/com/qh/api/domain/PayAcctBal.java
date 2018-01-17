@@ -28,6 +28,8 @@ public class PayAcctBal  implements Serializable{
 	private BigDecimal availBal;
 	//支付公司商户余额分布
 	private Map<String,BigDecimal> companyPayAvailBal;
+
+	private String haha;
 	
 	
 	public Integer getUserId() {
