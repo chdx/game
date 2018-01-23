@@ -117,13 +117,7 @@ public class RedisConfig extends CachingConfigurerSupport {
 		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		List<PatternTopic> topics = new ArrayList<PatternTopic>();
-		topics.add(new PatternTopic(RedisConstants.channel_order_notify));
-		topics.add(new PatternTopic(RedisConstants.channel_order_data));
-		topics.add(new PatternTopic(RedisConstants.channel_order_acp_nopass));
-		topics.add(new PatternTopic(RedisConstants.channel_order_acp));
-		topics.add(new PatternTopic(RedisConstants.channel_order_acp_notify));
-		topics.add(new PatternTopic(RedisConstants.channel_order_acp_data));
-		topics.add(new PatternTopic(RedisConstants.channel_charge_data));
+		topics.add(new PatternTopic("test"));
 		container.addMessageListener(messageListener, topics);
 		return container;
 	}

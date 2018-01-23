@@ -16,6 +16,8 @@ import com.qh.system.domain.UserDO;
 public interface UserService {
 	UserDO get(Integer id);
 
+	UserDO getByUsername(String username);
+	
 	List<UserDO> list(Map<String, Object> map);
 
 	int count(Map<String, Object> map);

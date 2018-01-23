@@ -16,6 +16,7 @@ import com.qh.common.domain.Tree;
 import com.qh.common.utils.BuildTree;
 import com.qh.api.constenum.UserType;
 import com.qh.api.utils.ParamUtil;
+import com.qh.redis.RedisConstants;
 import com.qh.redis.service.RedisUtil;
 import com.qh.system.dao.DeptDao;
 import com.qh.system.dao.UserDao;
@@ -47,6 +48,18 @@ public class UserServiceImpl implements UserService {
 		return user;
 	}
 
+	public UserDO getByUsername(String username) {
+	    UserDO user = (UserDO) RedisUtil.getRedisTemplate().opsForHash().get(RedisConstants.cache_login_user, username);
+	    if(user == null) {
+	        user = userMapper.getByUserName(username);
+	        if(user != null) {
+	            RedisUtil.getRedisTemplate().opsForHash().put(RedisConstants.cache_login_user, username, user);
+	        }
+	    }
+	    return user;
+	}
+	
+	
 	@Override
 	public List<UserDO> list(Map<String, Object> map) {
 		return userMapper.list(map);

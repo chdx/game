@@ -43,9 +43,12 @@ public class RedisUtil {
 	public static Object getHashValue(String key, Object obj) {
 		return redisTemplate.opsForHash().get(key, obj);
 	}
-
+	
+	public static void setHashValue(String key, Object hashKey,Object obj) {
+		redisTemplate.opsForHash().put(key, hashKey, obj);
+	}
+	
 	public static List<Object> getHashValueList(String key) {
-
 		return redisTemplate.opsForHash().values(key);
 	}
 
@@ -53,9 +56,12 @@ public class RedisUtil {
 		return redisTemplate.opsForHash().size(key).intValue();
 	}
 
+	public static Long getIdNo() {
+        return redisTemplate.opsForValue().increment(RedisConstants.key_idNo, 1);
+    }
+	
 	public static List<Object> getHashValueListForStringObjBlur(String key, String patten) {
 		Set<Object> keySet = redisTemplate.opsForHash().keys(key);
-
 		List<Object> keyList = new ArrayList<>();
 		for (Object obj : keySet) {
 			String tmpKey = obj.toString();
@@ -66,37 +72,14 @@ public class RedisUtil {
 		return redisTemplate.opsForHash().multiGet(key, keyList);
 	}
 
-	/**
-	 * @Description 设置聚富支付网管最近连接时间
-	 */
-	public static void setQrGatewayLastSyncTime(String merchNo, String outChannel, Object obj) {
-		redisTemplate.opsForHash().put(RedisConstants.cache_qr_last_login_time,
-				merchNo + RedisConstants.link_symbol + outChannel, obj);
-	}
 
-	/**
-	 * @Description 获取聚富支付网管最近连接时间
-	 */
-	public static Object getQrGatewayLastSyncTime(String merchNo, String outChannel) {
-		return redisTemplate.opsForHash().get(RedisConstants.cache_qr_last_login_time,
-				merchNo + RedisConstants.link_symbol + outChannel);
-	}
-
-	/**
-	 * @Description 获取商户余额
-	 * @param merchNo
-	 */
-	public static PayAcctBal getMerchBal(String merchNo) {
-		return (PayAcctBal) redisTemplate.opsForHash().get(RedisConstants.cache_bal_merch, merchNo);
-	}
 	
-	public static void setMerchBal(PayAcctBal payAcctBal){
-		 redisTemplate.opsForHash().put(RedisConstants.cache_bal_merch, payAcctBal.getUsername(), payAcctBal);
-	}
+	
+	
 	
 	/**
-	 * @Description 获取代理余额
-	 * @param merchNo
+	 * @Description 获取机构代理余额
+	 * @param username
 	 */
 	public static PayAcctBal getAgentBal(String username) {
 		return (PayAcctBal) redisTemplate.opsForHash().get(RedisConstants.cache_bal_agent, username);
@@ -105,7 +88,6 @@ public class RedisUtil {
 	public static void setAgentBal(PayAcctBal payAcctBal){
 		 redisTemplate.opsForHash().put(RedisConstants.cache_bal_agent, payAcctBal.getUsername(), payAcctBal);
 	}
-	
 	
 	/**
 	 * 
@@ -124,16 +106,6 @@ public class RedisUtil {
 		return value;
 	}
 
-	/**
-	 * 
-	 * @Description 获取改支付公司下的商户号
-	 * @param payCompany
-	 * @return
-	 */
-	public static Set<Object> getMechNoByCompany(String payCompany) {
-		return redisTemplate.boundSetOps(RedisConstants.cache_payConfig + PayConfigType.merchantNo.id() + payCompany)
-				.members();
-	}
 
 	public static void syncConfig(ConfigDO config, boolean delateFlag) {
 		if (config == null) {

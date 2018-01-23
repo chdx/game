@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration debug="false">
 	<!-- 项目的appid -->
 	<property name="APP_ID" value="game" />
 	<property name="LOG_PATH" value="D://gameLogs"></property>
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level
-				%logger{35} - %msg %n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
 		</encoder>
 	</appender>
 	<appender name="FILE_LOG"
@@ -21,8 +20,7 @@
 			<maxHistory>10</maxHistory>
 		</rollingPolicy>
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level
-				%logger{35} - %msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level	%logger{35} - %msg%n</pattern>
 		</encoder>
 	</appender>
 
@@ -40,8 +38,7 @@
 			<maxHistory>10</maxHistory>
 		</rollingPolicy>
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level
-				%logger{35} - %msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level	%logger{35} - %msg%n</pattern>
 		</encoder>
 	</appender>
 	<appender name="FILE_INFO"
@@ -58,8 +55,7 @@
 			<maxHistory>10</maxHistory>
 		</rollingPolicy>
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level
-				%logger{35} - %msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level	%logger{35} - %msg%n</pattern>
 		</encoder>
 	</appender>
 
@@ -77,8 +73,7 @@
 			<maxHistory>10</maxHistory>
 		</rollingPolicy>
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level
-				%logger{35} - %msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level	%logger{35} - %msg%n</pattern>
 		</encoder>
 	</appender>
 	<appender name="FILE_ERROR"
@@ -95,8 +90,7 @@
 			<maxHistory>10</maxHistory>
 		</rollingPolicy>
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level
-				%logger{35} - %msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level	%logger{35} - %msg%n</pattern>
 		</encoder>
 	</appender>
 

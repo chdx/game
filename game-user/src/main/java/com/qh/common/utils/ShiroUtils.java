@@ -24,39 +24,51 @@ public class ShiroUtils {
 	}
 	
 	
-	public static boolean ifFoundAcct(){
-		return ifFoundAcct();
+	public static boolean ifPlatform(){
+		return ifPlatform();
 	}
-	
 	/***
 	 * 
-	 * @Description 是否为资金账户
+	 * @Description 是否为游戏平台
 	 * @param user
 	 * @return
 	 */
-	public static boolean ifFoundAcct(UserDO user){
-		return UserType.foundAcct.id() == user.getUserType();
+	public static boolean ifPlatform(UserDO user){
+		return UserType.platform.id() == user.getUserType();
 	}
 	
 	
-	public static boolean ifMerch(){
-		return ifMerch(getUser());
+	public static boolean ifCenter(){
+		return ifCenter(getUser());
 	}
-	
 	/**
-	 * @Description 是否为商户
+	 * @Description 是否为运营中心
 	 * @param user
 	 * @return
 	 */
-	public static boolean ifMerch(UserDO user) {
-		return UserType.merch.id() == user.getUserType();
+	public static boolean ifCenter(UserDO user) {
+		return UserType.center.id() == user.getUserType();
 	}
+	
+	
+	public static boolean ifMember(){
+		return ifMember(getUser());
+	}
+	/**
+	 * @Description 是否为会员中心
+	 * @param user
+	 * @return
+	 */
+	public static  boolean ifMember(UserDO user) {
+		return UserType.member.id() == user.getUserType();
+	}
+	
 	
 	public static boolean ifAgent(){
 		return ifAgent(getUser());
 	}
 	/**
-	 * @Description 是否为代理
+	 * @Description 是否为机构代理
 	 * @param user
 	 * @return
 	 */
@@ -65,4 +77,15 @@ public class ShiroUtils {
 	}
 	
 	
+	public static boolean ifCust(){
+		return ifCust(getUser());
+	}
+	/**
+	 * @Description 是否为游戏客户
+	 * @param user
+	 * @return
+	 */
+	public static  boolean ifCust(UserDO user) {
+		return UserType.cust.id() == user.getUserType();
+	}
 }

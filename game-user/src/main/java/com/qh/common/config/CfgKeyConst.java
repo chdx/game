@@ -8,6 +8,11 @@ package com.qh.common.config;
  * @version 1.0.0
  */
 public class CfgKeyConst {
+    /***游戏用户默认密码***/
+    public static final String pass_default_gameUser = "pass_default_gameUser";
+    /***游戏用户默认状态***/
+    public static final String state_default_gameUser = "state_default_gameUser";
+    
 	/***系统配置参数 ip域名******/
     public static final String ip = "ip";
     /***系统配置文件路径***/

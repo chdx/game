@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.game.dao.GameUserDao">
+	
+	<resultMap type="com.qh.game.domain.GameUserDO" id="rmGameUser">
+		<result property="handRate" column="hand_rate" typeHandler="com.qh.common.config.JsonTypeHandler" />
+		<result property="proportion" column="proportion" typeHandler="com.qh.common.config.JsonTypeHandler" />
+	</resultMap>	
+	
+	<select id="get" resultMap="rmGameUser">
+		select `user_id`,`username`,`name`,`user_type`,`user_status`,`int_status`,`invite_code`,`int_num`,`hand_rate`,`proportion`,`platform_id`,`center_id`,`member_id`,`agent_id`,`parent_id` from game_user where user_id = #{value}
+	</select>
+
+	<select id="list" resultMap="rmGameUser">
+		select `user_id`,`username`,`name`,`user_type`,`user_status`,`int_status`,`invite_code`,`int_num`,`hand_rate`,`proportion`,`platform_id`,`center_id`,`member_id`,`agent_id`,`parent_id` from game_user
+        <where>  
+  		  <if test="name != null and name != ''"> and name = #{name} </if>
+  		  <if test="userType != null and userType != ''"> and user_type = #{userType} </if>
+  		  <if test="userStatus != null and userStatus != ''"> and user_status = #{userStatus} </if>
+  		  <if test="intStatus != null and intStatus != ''"> and int_status = #{intStatus} </if>
+  		  <if test="inviteCode != null and inviteCode != ''"> and invite_code = #{inviteCode} </if>
+  		  <if test="intNum != null and intNum != ''"> and int_num = #{intNum} </if>
+  		  <if test="platformId != null and platformId != ''"> and platform_id = #{platformId} </if>
+  		  <if test="centerId != null and centerId != ''"> and center_id = #{centerId} </if>
+  		  <if test="memberId != null and memberId != ''"> and member_id = #{memberId} </if>
+  		  <if test="agentId != null and agentId != ''"> and agent_id = #{agentId} </if>
+  		  <if test="parentId != null and parentId != ''"> and parent_id = #{parentId} </if>
+  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by user_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(1) from game_user
+		 <where>  
+	  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+	  		  <if test="username != null and username != ''"> and username = #{username} </if>
+	  		  <if test="name != null and name != ''"> and name = #{name} </if>
+	  		  <if test="userType != null and userType != ''"> and user_type = #{userType} </if>
+	  		  <if test="userStatus != null and userStatus != ''"> and user_status = #{userStatus} </if>
+	  		  <if test="intStatus != null and intStatus != ''"> and int_status = #{intStatus} </if>
+	  		  <if test="inviteCode != null and inviteCode != ''"> and invite_code = #{inviteCode} </if>
+	  		  <if test="intNum != null and intNum != ''"> and int_num = #{intNum} </if>
+	  		  <if test="handRate != null and handRate != ''"> and hand_rate = #{handRate} </if>
+	  		  <if test="proportion != null and proportion != ''"> and proportion = #{proportion} </if>
+	  		  <if test="platformId != null and platformId != ''"> and platform_id = #{platformId} </if>
+	  		  <if test="centerId != null and centerId != ''"> and center_id = #{centerId} </if>
+	  		  <if test="memberId != null and memberId != ''"> and member_id = #{memberId} </if>
+	  		  <if test="agentId != null and agentId != ''"> and agent_id = #{agentId} </if>
+	  		  <if test="parentId != null and parentId != ''"> and parent_id = #{parentId} </if>
+  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.qh.game.domain.GameUserDO">
+		insert into game_user
+		(
+			`user_id`, 
+			`username`, 
+			`name`, 
+			`user_type`, 
+			`user_status`, 
+			`int_status`, 
+			`invite_code`, 
+			`int_num`, 
+			`hand_rate`, 
+			`proportion`, 
+			`platform_id`, 
+			`center_id`, 
+			`member_id`, 
+			`agent_id`, 
+			`parent_id`
+		)
+		values
+		(
+			#{userId}, 
+			#{username}, 
+			#{name}, 
+			#{userType}, 
+			#{userStatus}, 
+			#{intStatus}, 
+			#{inviteCode}, 
+			#{intNum}, 
+			#{handRate,typeHandler=com.qh.common.config.JsonTypeHandler}, 
+			#{proportion,typeHandler=com.qh.common.config.JsonTypeHandler}, 
+			#{platformId}, 
+			#{centerId}, 
+			#{memberId}, 
+			#{agentId}, 
+			#{parentId}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.qh.game.domain.GameUserDO">
+		update game_user 
+		<set>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="userType != null">`user_type` = #{userType}, </if>
+			<if test="userStatus != null">`user_status` = #{userStatus}, </if>
+			<if test="intStatus != null">`int_status` = #{intStatus}, </if>
+			<if test="inviteCode != null">`invite_code` = #{inviteCode}, </if>
+			<if test="intNum != null">`int_num` = #{intNum}, </if>
+			<if test="handRate != null">`hand_rate` = #{handRate,typeHandler=com.qh.common.config.JsonTypeHandler}, </if>
+			<if test="proportion != null">`proportion` = #{proportion,typeHandler=com.qh.common.config.JsonTypeHandler}, </if>
+			<if test="platformId != null">`platform_id` = #{platformId}, </if>
+			<if test="centerId != null">`center_id` = #{centerId}, </if>
+			<if test="memberId != null">`member_id` = #{memberId}, </if>
+			<if test="agentId != null">`agent_id` = #{agentId}, </if>
+			<if test="parentId != null">`parent_id` = #{parentId}</if>
+		</set>
+		where user_id = #{userId}
+	</update>
+	
+	<delete id="remove">
+		delete from game_user where user_id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from game_user where user_id in 
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+</mapper>

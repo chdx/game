@@ -88,6 +88,28 @@ public class ParamUtil {
 	}
 
 	/**
+     * @Description 生成4位随机验证码
+     * @return
+     */
+    public static int generateCode4() {
+        return 1000 + random.nextInt(9000);
+    }
+	
+    /**
+     * @Description 生成3位随机验证码
+     * @return
+     */
+    public static int generateCode3() {
+        return 100 + random.nextInt(900);
+    }
+    /**
+     * @Description 生成5位随机验证码
+     * @return
+     */
+    public static int generateCode5() {
+        return 100000 + random.nextInt(900000);
+    }
+	/**
 	 * @Description 生成6位随机验证码
 	 * @return
 	 */
@@ -95,6 +117,14 @@ public class ParamUtil {
 		return 100000 + random.nextInt(900000);
 	}
 
+	/**
+     * @Description 生成7位随机验证码
+     * @return
+     */
+    public static int generateCode7() {
+        return 1000000 + random.nextInt(9000000);
+    }
+	
 	/**
 	 * @Description 生成8位随机验证码
 	 * @return

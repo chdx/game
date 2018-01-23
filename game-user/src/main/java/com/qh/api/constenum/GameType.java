@@ -20,4 +20,7 @@ public enum GameType {
     static {
         descMap.put(FIFAWC.name(), "世界杯");
     }
+    public static Map<String, String> desc() {
+        return descMap;
+    }
 }
