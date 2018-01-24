@@ -2,6 +2,7 @@
 <html>
 <meta charset="utf-8">
 <head th:include="include :: header"></head>
+<link href="/css/layui.css" rel="stylesheet">
 <body class="gray-bg">
 	<div class="wrapper wrapper-content ">
 		<div class="row">
@@ -9,92 +10,96 @@
 				<div class="ibox float-e-margins">
 					<div class="ibox-content">
 						<form class="form-horizontal m-t" id="signupForm">
-						<input id="userId" name="userId" th:value="${gameUser.userId}"  type="hidden">
+							<input type="hidden" id="userType" name="userType" th:value="${gameUser.userType}">
+							<input type="hidden" id="userId" name="userId" th:value="${gameUser.userId}">
+							<div class="form-group" th:remove="${parent==null}? all : none">
+								<input type="hidden" id="parentId" name="parentId" th:value="${parent.userId}">
+								<label class="col-sm-2 control-label">上级用户：</label>
+								<div class="col-sm-4">
+									<span class="form-control" th:text="${parent.username}"></span>
+								</div>
+								<label class="col-sm-2 control-label">上级用户名称：</label>
+								<div class="col-sm-4">
+									<span class="form-control" th:text="${parent.name}"></span>
+								</div>
+							</div>
 							<div class="form-group">	
-								<label class="col-sm-3 control-label">用户名：</label>
-								<div class="col-sm-8">
-									<input id="username" name="username" th:value="${gameUser.username}" class="form-control" type="text">
+								<label class="col-sm-2 control-label" th:text="${label+'：'}"></label>
+								<div class="col-sm-4">
+									<input id="username" name="username" class="form-control" type="text" readonly="readonly" th:value="${gameUser.username}">
+								</div>
+								<label class="col-sm-2 control-label" th:text="${label + '名称：'}"></label>
+								<div class="col-sm-4">
+									<input id="name" name="name"  class="form-control" type="text"th:value="${gameUser.name}" maxlength="20">
 								</div>
 							</div>
-														<div class="form-group">	
-								<label class="col-sm-3 control-label">显示名称：</label>
-								<div class="col-sm-8">
-									<input id="name" name="name" th:value="${gameUser.name}" class="form-control" type="text">
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">用户状态：</label>
+								<div class="col-sm-9">
+									<label th:each="userSt:${userSts}" class="radio-inline">
+										<input name="userStatus" type="radio" th:value="${userSt.key}"
+										th:text="${userSt.value}" th:checked="${gameUser.userStatus==userSt.key?'true':'false'}">
+									</label>
 								</div>
 							</div>
-														<div class="form-group">	
-								<label class="col-sm-3 control-label">用户类型：</label>
-								<div class="col-sm-8">
-									<input id="userType" name="userType" th:value="${gameUser.userType}" class="form-control" type="text">
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">积分状态：</label>
+								<div class="col-sm-9">
+									<label th:each="intSt:${intSts}" class="radio-inline">
+										<input name="intStatus" type="radio" th:value="${intSt.key}"
+										th:text="${intSt.value}" th:checked="${gameUser.intStatus==intSt.key?'true':'false'}">
+									</label>
 								</div>
 							</div>
-														<div class="form-group">	
-								<label class="col-sm-3 control-label">用户状态：</label>
-								<div class="col-sm-8">
-									<input id="userStatus" name="userStatus" th:value="${gameUser.userStatus}" class="form-control" type="text">
-								</div>
+							<div class="layui-tab" lay-filter="tab-rates">
+							  <ul class="layui-tab-title">
+							    <li th:remove="${parent==null}? all : none">上级手续费率</li>
+							    <li th:remove="${parent==null}? all : none">上级返佣分成</li>
+							    <li class="layui-this" lay-id="tab-handRate">手续费率</li>
+							    <li lay-id="tab-proportion">返佣分成</li>
+							  </ul>
+							  <div class="layui-tab-content">
+							  	<div class="layui-tab-item" th:remove="${parent==null}? all : none">
+							    	<label class="col-sm-12">上级手续费率</label>
+							    	<div class="col-sm-6" th:each="gameType:${gameTypes}" style="margin-bottom: 2px;text-align: right">
+							    		<label class="col-sm-5" th:text="${gameType.value}" ></label>
+							    		<div class="col-sm-7" th:with = "handValue = ${parent.handRate[gameType.key]}">
+											<input th:value="${handValue}==null?'':${#numbers.formatDecimal(handValue,1,2)}" readonly="readonly" class="form-control">
+										</div>
+									</div>
+							    </div>
+							    <div class="layui-tab-item" th:remove="${parent==null}? all : none">
+							    	<label class="col-sm-12">上级返佣分成</label>
+							    	<div class="col-sm-6" th:each="gameType:${gameTypes}" style="margin-bottom: 2px;text-align: right">
+							    		<label class="col-sm-5" th:text="${gameType.value}" ></label>
+							    		<div class="col-sm-7" th:with = "prop = ${parent.proportion[gameType.key]}">
+											<input th:value="${prop}==null?'':${#numbers.formatDecimal(prop,1,2)}" readonly="readonly" class="form-control">
+										</div>
+									</div>
+							    </div>
+							  	<div class="layui-tab-item layui-show">
+							  		<label class="col-sm-12">手续费率</label>
+							  		<div class="col-sm-6" th:each="gameType:${gameTypes}" style="margin-bottom: 2px;text-align: right">
+							    		<label class="col-sm-5" th:text="${gameType.value}" ></label>
+							    		<div class="col-sm-7" th:with = "handValue = ${gameUser.handRate[gameType.key]}">
+											<input type="number" name="handRate" th:id="'handRate' + ${gameType.key}" th:value="${handValue}==null?'':${#numbers.formatDecimal(handValue,1,2)}"
+											required="required" class="form-control" max="1" min="0.01" maxlength="3" >
+										</div>
+									</div>
+							  	</div>
+							    <div class="layui-tab-item">
+							    	<label class="col-sm-12">返佣分成</label>
+							    	<div class="col-sm-6" th:each="gameType:${gameTypes}" style="margin-bottom: 2px;text-align: right">
+							    		<label class="col-sm-5" th:text="${gameType.value}" ></label>
+							    		<div class="col-sm-7" th:with = "prop = ${gameUser.proportion[gameType.key]}">
+											<input type="number" name="proportion" th:id="'proportion' + ${gameType.key}"  th:value="${prop}==null?'':${#numbers.formatDecimal(prop,1,2)}"
+											required="required" class="form-control" max="1" min="0.01" maxlength="3" >
+										</div>
+									</div>
+							    </div>
+							  </div>
 							</div>
-														<div class="form-group">	
-								<label class="col-sm-3 control-label">：</label>
-								<div class="col-sm-8">
-									<input id="intStatus" name="intStatus" th:value="${gameUser.intStatus}" class="form-control" type="text">
-								</div>
-							</div>
-														<div class="form-group">	
-								<label class="col-sm-3 control-label">邀请码：</label>
-								<div class="col-sm-8">
-									<input id="inviteCode" name="inviteCode" th:value="${gameUser.inviteCode}" class="form-control" type="text">
-								</div>
-							</div>
-														<div class="form-group">	
-								<label class="col-sm-3 control-label">积分账号：</label>
-								<div class="col-sm-8">
-									<input id="intNum" name="intNum" th:value="${gameUser.intNum}" class="form-control" type="text">
-								</div>
-							</div>
-														<div class="form-group">	
-								<label class="col-sm-3 control-label">手续分成费率：</label>
-								<div class="col-sm-8">
-									<input id="handRate" name="handRate" th:value="${gameUser.handRate}" class="form-control" type="text">
-								</div>
-							</div>
-														<div class="form-group">	
-								<label class="col-sm-3 control-label">结算分成比例：</label>
-								<div class="col-sm-8">
-									<input id="proportion" name="proportion" th:value="${gameUser.proportion}" class="form-control" type="text">
-								</div>
-							</div>
-														<div class="form-group">	
-								<label class="col-sm-3 control-label">平台Id：</label>
-								<div class="col-sm-8">
-									<input id="platformId" name="platformId" th:value="${gameUser.platformId}" class="form-control" type="text">
-								</div>
-							</div>
-														<div class="form-group">	
-								<label class="col-sm-3 control-label">运营中心Id：</label>
-								<div class="col-sm-8">
-									<input id="centerId" name="centerId" th:value="${gameUser.centerId}" class="form-control" type="text">
-								</div>
-							</div>
-														<div class="form-group">	
-								<label class="col-sm-3 control-label">会员中心Id：</label>
-								<div class="col-sm-8">
-									<input id="memberId" name="memberId" th:value="${gameUser.memberId}" class="form-control" type="text">
-								</div>
-							</div>
-														<div class="form-group">	
-								<label class="col-sm-3 control-label">代理机构Id：</label>
-								<div class="col-sm-8">
-									<input id="agentId" name="agentId" th:value="${gameUser.agentId}" class="form-control" type="text">
-								</div>
-							</div>
-														<div class="form-group">	
-								<label class="col-sm-3 control-label">父类Id：</label>
-								<div class="col-sm-8">
-									<input id="parentId" name="parentId" th:value="${gameUser.parentId}" class="form-control" type="text">
-								</div>
-							</div>
-																					<div class="form-group">
+							<div class="form-group">
 								<div class="col-sm-8 col-sm-offset-3">
 									<button type="submit" class="btn btn-primary">提交</button>
 								</div>
@@ -103,10 +108,16 @@
 					</div>
 				</div>
 			</div>
+		</div>
 	</div>
-	</div>
-	<div th:include="include::footer"></div>
-	<script type="text/javascript" src="/js/appjs/game/gameUser/edit.js">
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	    var label = [[${label}]];
+		var gameTypes = [[${gameTypes}]];
+	/*]]>*/
 	</script>
+	<div th:include="include::footer"></div>
+	<script type="text/javascript" src="/js/layui.js"></script>
+	<script type="text/javascript" src="/js/appjs/game/gameUser/edit.js"></script>
 </body>
 </html>

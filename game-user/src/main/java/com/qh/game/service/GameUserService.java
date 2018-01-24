@@ -30,4 +30,6 @@ public interface GameUserService {
 	int batchRemove(Integer[] userIds);
 
     GameUserDO get(Integer userType, Integer userId);
+    
+    GameUserDO getParent(Integer childUserType, Integer userId);
 }

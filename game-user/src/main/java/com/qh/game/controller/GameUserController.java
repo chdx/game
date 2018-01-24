@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.qh.api.constenum.GameType;
 import com.qh.api.constenum.UserType;
+import com.qh.api.utils.ParamUtil;
 import com.qh.common.utils.PageUtils;
 import com.qh.common.utils.Query;
 import com.qh.common.utils.R;
@@ -92,6 +93,19 @@ public class GameUserController {
 	String edit(@PathVariable("userId") Integer userId,Model model){
 		GameUserDO gameUser = gameUserService.get(userId);
 		model.addAttribute("gameUser", gameUser);
+		if(gameUser == null) {
+		    model.addAttribute("msg", "当前用户信息为空");
+            return GameConstants.url_error_frame;
+		}
+		Integer userType = gameUser.getUserType();
+		if(gameUser.getParentId() != null && GameConstants.default_game_user_id != gameUser.getParentId()) {
+		    GameUserDO parent = gameUserService.getParent(userType,userId);
+		    model.addAttribute("parent", parent);
+		}
+		model.addAttribute("label", UserType.desc().get(userType));
+		model.addAttribute("userSts", GameUserStatus.desc());
+        model.addAttribute("intSts", GameIntStatus.desc());
+        model.addAttribute("gameTypes", GameType.desc());
 	    return "game/gameUser/edit";
 	}
 	
@@ -106,6 +120,20 @@ public class GameUserController {
         if (userType == null) {
             return R.error("用户类型为空");
         }
+        if(gameUser.getUserStatus() == null) {
+            return R.error("用户状态为空");
+        }
+        if(gameUser.getIntStatus() == null) {
+            return R.error("积分状态为空");
+        }
+        if(ParamUtil.isEmpty(gameUser.getName())) {
+            return R.error("用户名称为空");
+        }
+        if(ParamUtil.isEmpty(gameUser.getUsername())) {
+            return R.error("用户名为空");
+        }
+        gameUser.setUsername(gameUser.getUsername().trim());
+        
 	    if(UserType.platform.id() == userType && !ShiroUtils.getSubjct().isPermitted("game:gameUser:addPlatf")) {
 	        return R.error("权限不足");
 	    }
@@ -118,6 +146,26 @@ public class GameUserController {
 	@RequestMapping("/update")
 	@RequiresPermissions("game:gameUser:edit")
 	public R update( GameUserDO gameUser){
+	    Integer userType = gameUser.getUserType();
+        if (gameUser.getUserId() == null) {
+            return R.error("userId为空");
+        }
+        if(gameUser.getUserStatus() == null) {
+            return R.error("用户状态为空");
+        }
+        if(gameUser.getIntStatus() == null) {
+            return R.error("积分状态为空");
+        }
+        if(ParamUtil.isEmpty(gameUser.getName())) {
+            return R.error("用户名称为空");
+        }
+        if(ParamUtil.isEmpty(gameUser.getUsername())) {
+            return R.error("用户名为空");
+        }
+        gameUser.setUsername(gameUser.getUsername().trim());
+        if(UserType.platform.id() == userType && !ShiroUtils.getSubjct().isPermitted("game:gameUser:addPlatf")) {
+            return R.error("权限不足");
+        }
 		return gameUserService.update(gameUser);
 	}
 	
@@ -127,9 +175,9 @@ public class GameUserController {
 	@PostMapping( "/remove")
 	@ResponseBody
 	@RequiresPermissions("game:gameUser:remove")
-	public R remove( Integer userId){
+	public R remove(Integer userId){
 		if(gameUserService.remove(userId)>0){
-		return R.ok();
+		    return R.ok();
 		}
 		return R.error();
 	}

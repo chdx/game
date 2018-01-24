@@ -104,18 +104,10 @@
 		update game_user 
 		<set>
 			<if test="name != null">`name` = #{name}, </if>
-			<if test="userType != null">`user_type` = #{userType}, </if>
 			<if test="userStatus != null">`user_status` = #{userStatus}, </if>
 			<if test="intStatus != null">`int_status` = #{intStatus}, </if>
-			<if test="inviteCode != null">`invite_code` = #{inviteCode}, </if>
-			<if test="intNum != null">`int_num` = #{intNum}, </if>
 			<if test="handRate != null">`hand_rate` = #{handRate,typeHandler=com.qh.common.config.JsonTypeHandler}, </if>
 			<if test="proportion != null">`proportion` = #{proportion,typeHandler=com.qh.common.config.JsonTypeHandler}, </if>
-			<if test="platformId != null">`platform_id` = #{platformId}, </if>
-			<if test="centerId != null">`center_id` = #{centerId}, </if>
-			<if test="memberId != null">`member_id` = #{memberId}, </if>
-			<if test="agentId != null">`agent_id` = #{agentId}, </if>
-			<if test="parentId != null">`parent_id` = #{parentId}</if>
 		</set>
 		where user_id = #{userId}
 	</update>

@@ -64,9 +64,6 @@ public class GameUserServiceImpl implements GameUserService {
             }
         }
         String username = gameUser.getUsername();
-        if(ParamUtil.isEmpty(username)) {
-            return R.error("username为空");
-        }
         UserDO user = userService.getByUsername(username);
         if(user != null) {
             return R.error(username + "，该用户已经存在");
@@ -85,6 +82,10 @@ public class GameUserServiceImpl implements GameUserService {
             GameUserDO parent = get(parentUserType, parentId);
             if(parent == null) {
                 return R.error("查询父级信息为空");
+            }
+            String msg = checkRates(parent,gameUser);
+            if(ParamUtil.isNotEmpty(msg)) {
+                return R.error(msg);
             }
             if(UserType.platform.id() == parentUserType) {
                 gameUser.setPlatformId(parent.getUserId());
@@ -122,7 +123,67 @@ public class GameUserServiceImpl implements GameUserService {
         if (count == 0) {
             return R.error("保存失败");
         }
+        this.putToCache(gameUser);
         return R.ok("操作成功");
+    }
+
+    /***
+     * 
+     * @Description 交易手续费比例已经分成比例
+     * @param parent
+     * @param gameUser
+     * @return
+     */
+    private String checkRates(GameUserDO parent, GameUserDO gameUser) {
+        String msg = null;
+        if(gameUser.getHandRate() == null) {
+            gameUser.setHandRate(new HashMap<>());
+        }
+        if(gameUser.getProportion() == null) {
+            gameUser.setProportion(new HashMap<>());
+        }
+        if(parent.getHandRate() == null) {
+            parent.setHandRate(new HashMap<>());
+        }
+        if(parent.getProportion() == null) {
+            parent.setProportion(new HashMap<>());
+        }
+        BigDecimal parentValue = null;
+        BigDecimal currValue = null;
+        String gameTypeDesc = "";
+        for(String gameType : GameType.desc().keySet()) {
+            gameTypeDesc = GameType.desc().get(gameType);
+            parentValue = parent.getHandRate().get(gameType);
+            if(parentValue == null) {
+                msg = "上级"+ gameTypeDesc+"手续费率为空";
+                break;
+            }
+            currValue = gameUser.getHandRate().get(gameType);
+            if(currValue == null) {
+                msg = "当前用户"+ gameTypeDesc+"手续费率为空";
+                break;
+            }
+            if(currValue.compareTo(parentValue) > 0 || currValue.compareTo(new BigDecimal(1)) > 0) {
+                msg = "当前用户"+ gameTypeDesc+"手续费率超出范围";
+                break;
+            }
+            
+            parentValue = parent.getProportion().get(gameType);
+            if(parentValue == null) {
+                msg = "上级"+ gameTypeDesc+"分成比例为空";
+                break;
+            }
+            currValue = gameUser.getProportion().get(gameType);
+            if(currValue == null) {
+                msg = "当前用户"+ gameTypeDesc+"分成比例为空";
+                break;
+            }
+            if(currValue.compareTo(parentValue) > 0 || currValue.compareTo(new BigDecimal(1)) > 0) {
+                msg = "当前用户"+ gameTypeDesc+"分成比例超出范围";
+                break;
+            }
+        }
+        return msg;
     }
 
     /**
@@ -141,17 +202,32 @@ public class GameUserServiceImpl implements GameUserService {
 
     @Override
     public R update(GameUserDO gameUser) {
-        Integer userType = gameUser.getUserType();
-        if (userType == null) {
-            return R.error("用户类型为空");
-        }
-        if (UserType.platform.id() == userType) {
+        Integer parentId = gameUser.getParentId();
+        if (UserType.platform.id() == gameUser.getUserType()) {
             setPlatformRate(gameUser);
+            gameUser.setParentId(GameConstants.default_game_user_id);
+        }else {
+            //设置从属关系
+            if(parentId == null) {
+                return R.error("上级信息为空");
+            }
+        }
+        //设置从属关系
+        if (UserType.platform.id() != gameUser.getUserType()) {
+            GameUserDO parent = this.getParent(gameUser.getUserType(), parentId);
+            if(parent == null) {
+                return R.error("查询父级信息为空");
+            }
+            String msg = checkRates(parent,gameUser);
+            if(ParamUtil.isNotEmpty(msg)) {
+                return R.error(msg);
+            }
         }
         int count = gameUserDao.update(gameUser);
         if (count == 0) {
             return R.error("保存失败");
         }
+        this.putToCache(gameUser);
         return R.ok("操作成功");
     }
 
@@ -171,6 +247,40 @@ public class GameUserServiceImpl implements GameUserService {
         if (utEnum == null) {
             return null;
         }
+        GameUserDO gameUser = getFromCache(userId, utEnum);
+        if (gameUser == null) {
+            gameUser = this.get(userId);
+        }else {
+            return gameUser;
+        }
+
+        if (gameUser != null) {
+            putToCache(gameUser);
+        }
+        return gameUser;
+    }
+
+    private void putToCache(GameUserDO gameUser) {
+        UserType utEnum = UserType.getUserType(gameUser.getUserType());
+        switch (utEnum) {
+            case platform:
+                RedisUtil.setHashValue(RedisConstants.cache_platform_, gameUser.getUserId(), gameUser);
+                break;
+            case center:
+                RedisUtil.setHashValue(RedisConstants.cache_center_, gameUser.getUserId(), gameUser);
+                break;
+            case member:
+                RedisUtil.setHashValue(RedisConstants.cache_member_, gameUser.getUserId(), gameUser);
+                break;
+            case agent:
+                RedisUtil.setHashValue(RedisConstants.cache_agent_, gameUser.getUserId(), gameUser);
+                break;
+            default:
+                break;
+         }
+    }
+
+    private GameUserDO getFromCache(Integer userId, UserType utEnum) {
         GameUserDO gameUser = null;
         switch (utEnum) {
             case platform:
@@ -190,25 +300,11 @@ public class GameUserServiceImpl implements GameUserService {
         }
         if (gameUser == null) {
             gameUser = this.get(userId);
+        }else {
+            return gameUser;
         }
-
         if (gameUser != null) {
-            switch (utEnum) {
-                case platform:
-                    RedisUtil.setHashValue(RedisConstants.cache_platform_, gameUser.getUserId(), gameUser);
-                    break;
-                case center:
-                    RedisUtil.setHashValue(RedisConstants.cache_center_, gameUser.getUserId(), gameUser);
-                    break;
-                case member:
-                    RedisUtil.setHashValue(RedisConstants.cache_member_, gameUser.getUserId(), gameUser);
-                    break;
-                case agent:
-                    RedisUtil.setHashValue(RedisConstants.cache_agent_, gameUser.getUserId(), gameUser);
-                    break;
-                default:
-                    break;
-                }
+            putToCache(gameUser);
         }
         return gameUser;
     }
@@ -230,5 +326,33 @@ public class GameUserServiceImpl implements GameUserService {
         }else{
             return null;
         }
+    }
+
+    @Override
+    public GameUserDO getParent(Integer childUserType, Integer userId) {
+        UserType utEnum = UserType.getUserType(childUserType);
+        if (utEnum == null) {
+            return null;
+        }
+        GameUserDO gameUser = null;
+        switch (utEnum) {
+            case platform:
+                break;
+            case center:
+                gameUser = (GameUserDO) RedisUtil.getHashValue(RedisConstants.cache_platform_, userId);
+                break;
+            case member:
+                gameUser = (GameUserDO) RedisUtil.getHashValue(RedisConstants.cache_center_, userId);
+                break;
+            case agent:
+                gameUser = (GameUserDO) RedisUtil.getHashValue(RedisConstants.cache_member_, userId);
+                if(gameUser == null) {
+                    gameUser = (GameUserDO) RedisUtil.getHashValue(RedisConstants.cache_agent_, userId);
+                }
+                break;
+            default:
+                break;
+        }
+        return gameUser;
     }
 }

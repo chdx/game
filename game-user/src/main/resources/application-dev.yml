@@ -35,7 +35,7 @@ spring:
   # REDIS (RedisProperties)
   redis: 
     # Redis服务器地址
-    host: 192.168.1.123
+    host: 192.168.1.188
     # Redis服务器连接端口
     port: 6379  
     # Redis服务器连接密码（默认为空）
@@ -65,7 +65,7 @@ spring:
 redisson:
   password: redis
   # 单机模式
-  address: redis://192.168.1.123:6379
+  address: redis://192.168.1.188:6379
   # 哨兵模式
   #master-name: mymaster
   #sentinel-addresses: redis://192.168.1.188:26379,redis://192.168.1.188:26479,redis://192.168.1.188:26579

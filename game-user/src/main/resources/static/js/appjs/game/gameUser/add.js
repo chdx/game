@@ -3,7 +3,9 @@ $().ready(function() {
 	var userType = $("#userType").val();
 	if(userType == 1){
 		$("input[name=handRate]").val(1);
+		$("input[name=handRate]").attr("readonly","readonly");
 		$("input[name=proportion]").val(1);
+		$("input[name=proportion]").attr("readonly","readonly");
 	}
 });
 var tabElement;
@@ -11,7 +13,14 @@ layui.use(['element','form'], function(){
 	  var $ = layui.jquery
 	  ,element = layui.element;
 	  tabElement = element;
-	  tabElement.tabChange('tab-rates', "tab-proportion");
+	  //获取hash来切换选项卡，假设当前地址的hash为lay-id对应的值
+	  var layid = location.hash.replace(/^#tab-rates=/, '');
+	  element.tabChange('tab-rates', layid); //假设当前地址为：http://a.com#test1=222，那么选项卡会自动切换到“发送消息”这一项
+	  
+	  //监听Tab切换，以改变地址hash值
+	  element.on('tab(tab-rates)', function(){
+	    location.hash = 'tab-rates='+ this.getAttribute('lay-id');
+	  });
 });
 $.validator.setDefaults({
 	submitHandler : function() {
@@ -19,6 +28,8 @@ $.validator.setDefaults({
 	}
 });
 function save() {
+	var userStatus = $("input[name=userStatus]:checked").val();
+	var intStatus = $("input[name=intStatus]:checked").val();
 	tabElement.tabChange('tab-rates', "tab-handRate");
 	var handRates = new Object();
 	var rateSaveFlag = true;
@@ -28,13 +39,12 @@ function save() {
 			handRates[$(this).attr("id").substring(8)] = handRate;
 		}else{
 			rateSaveFlag = $("#signupForm").validate().element($(this));
-			console.log("rateSaveFlag:" + rateSaveFlag);
+			return;
 		}
 	});
 	if(!rateSaveFlag){
 		return false;
 	}
-	debugger;
 	tabElement.tabChange('tab-rates', "tab-proportion");
 	var proportions = new Object();
 	$("input[name=proportion]").each(function(){
@@ -43,7 +53,7 @@ function save() {
 			proportions[$(this).attr("id").substring(10)] = proportion;
 		}else{
 			rateSaveFlag = $("#signupForm").validate().element($(this));
-			console.log("rateSaveFlag:" + rateSaveFlag);
+			return;
 		}
 	});
 	if(!rateSaveFlag){
@@ -59,8 +69,8 @@ function save() {
 			parentId : $("#parentId").val(),
 			username : $("#username").val(),
 			name : $("#name").val(),
-			userStatus : $("#userStatus").val(),
-			intStatus : $("#intStatus").val(),
+			userStatus :userStatus,
+			intStatus : intStatus,
 			handRate : handRates,
 			proportion : proportions
 		},

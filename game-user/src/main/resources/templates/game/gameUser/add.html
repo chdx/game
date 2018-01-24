@@ -26,11 +26,11 @@
 							<div class="form-group">	
 								<label class="col-sm-2 control-label" th:text="${label+'：'}"></label>
 								<div class="col-sm-4">
-									<input id="username" name="username" class="form-control" type="text" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')">
+									<input id="username" name="username" class="form-control" type="text" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" maxlength="15">
 								</div>
 								<label class="col-sm-2 control-label" th:text="${label + '名称：'}"></label>
 								<div class="col-sm-4">
-									<input id="name" name="name"  class="form-control" type="text">
+									<input id="name" name="name"  class="form-control" type="text" maxlength="20">
 								</div>
 							</div>
 							<div class="form-group">	
@@ -38,7 +38,7 @@
 								<div class="col-sm-9">
 									<label th:each="userSt:${userSts}" class="radio-inline">
 										<input name="userStatus" type="radio" th:value="${userSt.key}"
-										th:text="${userSt.value}" th:checked="${userSt.key== 0}">
+										th:text="${userSt.value}"  th:checked="${userSt.key== 0?'true':'false'}">
 									</label>
 								</div>
 							</div>
@@ -47,7 +47,7 @@
 								<div class="col-sm-9">
 									<label th:each="intSt:${intSts}" class="radio-inline">
 										<input name="intStatus" type="radio" th:value="${intSt.key}"
-										th:text="${intSt.value}" th:checked="${intSt.key== 1}">
+										th:text="${intSt.value}"  th:checked="${intSt.key== 1?'true':'false'}">
 									</label>
 								</div>
 							</div>
